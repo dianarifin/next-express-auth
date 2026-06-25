@@ -1,5 +1,12 @@
-import { Router } from "express";
+import {
+  Router,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 import passport from "../config/passport";
+import { authenticateJwt } from "@/middleware/auth.middleware";
+import { generateJwt } from "@/utils/jwt";
 
 const router = Router();
 
@@ -19,36 +26,120 @@ router.get(
 // 2. serialize user.id ke session
 // 3. redirect ke frontend
 
+// router.get(
+//   "/google/callback",
+//   passport.authenticate("google", {
+//     successRedirect: `${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard`,
+//     failureRedirect: `${process.env.FRONTEND_URL || "http://localhost:3000"}/login?error=auth_failed`,
+//   }),
+//   (req: Request, res: Response) => {
+//     // req.user sudah berisi user yang berhasil login
+//     const user = req.user as {
+//       id: string;
+//       email: string;
+//       name: string | null;
+//       avatarUrl: string | null;
+//     };
+
+//     // generate token
+//     const token = generateJwt({
+//       id: user.id,
+//       email: user.email,
+//       name: user.name || "",
+//       avatarUrl: user.avatarUrl,
+//     });
+
+//     console.log("[JWT] Token generated untuk: ", user.email);
+
+//     // redirect ke frontend dengan token sebagai query param
+//     res.redirect(
+//       `${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard?token=${token}`,
+//     );
+//   },
+// );
+
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
-    successRedirect: `${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard`,
-    failureRedirect: `${process.env.FRONTEND_URL || "http://localhost:3000"}/login?error=auth_failed`,
-  }),
+  (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate(
+      "google",
+      { session: false },
+      (err: unknown, user: unknown) => {
+        if (err || !user) {
+          console.error("[Google Callback] Error:", err);
+          return res.redirect(
+            `${process.env.FRONTEND_URL || "http://localhost:3000"}/login?error=auth_failed`,
+          );
+        }
+
+        const u = user as {
+          id: string;
+          email: string;
+          name: string | null;
+          avatarUrl: string | null;
+        };
+        const token = generateJwt({
+          id: u.id,
+          email: u.email,
+          name: u.name || "",
+          avatarUrl: u.avatarUrl,
+        });
+
+        // SET cookie dari backend (port 3001) → browser simpan otomatis
+        res.cookie("token", token, {
+          httpOnly: true, // JS tidak bisa akses → aman dari XSS
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax", // biar bisa dikirim antar port
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
+        });
+
+        console.log("[JWT] Token generated untuk:", u.email);
+        res.redirect(
+          `${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard?token=${token}`,
+        );
+      },
+    )(req, res, next);
+  },
 );
 
-// ============================================================
 // CEK USER YANG SEDANG LOGIN
-// ============================================================
-router.get("/me", (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ error: "Belum login" });
-  }
+// akses routes ini secara tidak langsung akses melalui deserializeUser,
+// karena passport akan otomatis memanggil deserializeUser untuk mengambil user dari session
+// disini memakai pendekatan session-based auth, tapi kita bisa juga memakai pendekatan jwt-based auth
+// router.get("/me", (req, res) => {
+//   if (!req.isAuthenticated()) {
+//     return res.status(401).json({ error: "Belum login" });
+//   }
+//   console.log("req.session yang ada: ", req.session);
+//   console.log("req.user yang ada: ", req.user);
+//   res.json({ user: req.user });
+// });
+
+// akses routes ini secara tidak langsung akses melalui authenticateJwt,
+// karena authenticateJwt akan otomatis memanggil verifyJwt untuk mengambil user dari token
+router.get("/me", authenticateJwt, (req: Request, res: Response) => {
   res.json({ user: req.user });
 });
 
 // ============================================================
 // LOGOUT
 // ============================================================
-router.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) return next(err);
-    req.session.destroy(() => {
-      res.redirect(
-        `${process.env.FRONTEND_URL || "http://localhost:3000"}/login`,
-      );
-    });
-  });
+// pendekatan session-based auth, jadi logout dengan menghapus session di server dan cookie di browser
+// router.get("/logout", (req, res, next) => {
+//   req.logout((err) => {
+//     if (err) return next(err);
+//     req.session.destroy(() => {
+//       res.redirect(
+//         `${process.env.FRONTEND_URL || "http://localhost:3000"}/login`,
+//       );
+//     });
+//   });
+// });
+
+// logout route untuk pendekatan jwt-based auth, jadi logout dengan menghapus token di client (frontend)
+router.get("/logout", (req, res) => {
+  // frontend harus menghapus token dari localStorage atau cookie
+  res.json({ message: "Logout berhasil, hapus token di client" });
 });
 
 export default router;

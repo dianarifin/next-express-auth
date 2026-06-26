@@ -26,6 +26,7 @@ export function morganLogger(): Handler {
     return morgan("combined", { stream: accessLogStream });
   }
 
+  // dev: tetap tulis ke file + console
   return morgan("dev");
 }
 

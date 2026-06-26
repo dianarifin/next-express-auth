@@ -1,6 +1,5 @@
-import passport from "passport";
-import { prisma } from "@repo/database/lib/prisma";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
+import { findOrCreateGoogleUser, GoogleProfile } from "@/modules/auth/auth.service";
 
 // ============================================================
 // GOOGLE STRATEGY
@@ -24,38 +23,15 @@ const googleStrategy = new GoogleStrategy(
     // Jika user tidak ditemukan, buat user baru
     // Kembalikan user yang ditemukan atau dibuat
     try {
-      const p = profile as {
-        id: string;
-        emails: { value: string }[];
-        displayName: string;
-        photos: { value: string }[];
-      };
+      const p = profile as GoogleProfile;
 
       console.log(
-        "[Google StraStrategy] Menerima profil dari Google:",
+        "[Google Strategy] Menerima profil dari Google:",
         p.id,
         p.displayName,
       );
 
-      let user = await prisma.user.findUnique({
-        where: { googleId: p.id },
-      });
-
-      if (!user) {
-        console.log("[Google Strategy] Membuat user baru");
-        user = await prisma.user.create({
-          data: {
-            googleId: p.id,
-            email: p.emails?.[0]?.value ?? "",
-            name: p.displayName,
-            avatarUrl: p.photos?.[0]?.value ?? null,
-            provider: "google",
-          },
-        });
-      } else {
-        console.log("[Google Strategy] User sudah ada");
-      }
-
+      const user = await findOrCreateGoogleUser(p);
       return done(null, user);
     } catch (err) {
       console.error(

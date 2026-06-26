@@ -1,6 +1,5 @@
 import passport from "passport";
-import { prisma } from "@repo/database/lib/prisma";
-import googleStrategy from "../strategies/google-strategy";
+import googleStrategy from "@/strategies/google.strategy";
 
 // SERIALIZE & DESERIALIZE — WAJIB untuk session-based auth
 // serializeUser: menyimpan user.id ke session

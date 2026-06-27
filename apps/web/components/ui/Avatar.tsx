@@ -19,7 +19,7 @@ export function Avatar({ src, name, size = 64 }: AvatarProps) {
   if (src) {
     return (
       <div
-        className="rounded-full p-[3px] bg-gradient-to-br from-brand to-brand-hover shadow-md shrink-0"
+        className="rounded-full p-[3px] bg-gradient-to-br from-accent to-accent-soft shrink-0"
         style={{ width: size + 6, height: size + 6 }}
       >
         <Image
@@ -35,7 +35,7 @@ export function Avatar({ src, name, size = 64 }: AvatarProps) {
 
   return (
     <div
-      className="rounded-full bg-gradient-to-br from-brand to-brand-hover text-white font-bold flex items-center justify-center shadow-md shrink-0"
+      className="rounded-full bg-gradient-to-br from-accent to-accent-soft text-white font-normal flex items-center justify-center shrink-0"
       style={{ width: size, height: size, fontSize: size * 0.36 }}
     >
       {initials}

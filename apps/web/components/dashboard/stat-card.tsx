@@ -9,13 +9,13 @@ interface StatCardProps {
 export function StatCard({ label, value, delay = 0 }: StatCardProps) {
   return (
     <Card
-      className="animate-fade-up px-5 py-4 flex flex-col gap-1 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+      className="animate-fade-up px-5 py-4 flex flex-col gap-1 transition-colors duration-200"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <span className="text-[10.5px] font-semibold text-muted-foreground uppercase tracking-wider">
+      <span className="font-mono text-[10px] text-body-mid uppercase tracking-[1.2px]">
         {label}
       </span>
-      <span className="text-base font-bold text-foreground">{value}</span>
+      <span className="text-base font-normal text-ink">{value}</span>
     </Card>
   );
 }

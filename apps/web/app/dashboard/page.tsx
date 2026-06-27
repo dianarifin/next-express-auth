@@ -47,19 +47,19 @@ function DashboardContent() {
   const firstName = user.name?.split(" ")[0] ?? "Pengguna";
 
   return (
-    <div className="min-h-screen w-full bg-[#f5f5f7]">
+    <div className="min-h-screen w-full bg-canvas">
       <DashboardNavbar onLogout={handleLogout} />
 
       <main className="mx-auto w-full max-w-2xl px-5 sm:px-6 py-8 sm:py-10 flex flex-col gap-7">
         {/* Welcome heading */}
         <div className="animate-fade-up">
-          <p className="text-[11px] font-semibold text-brand uppercase tracking-wider mb-1.5">
+          <p className="font-mono text-[12px] text-accent uppercase tracking-[1.2px] mb-1.5">
             Dashboard
           </p>
-          <h1 className="text-[26px] sm:text-[28px] font-bold text-foreground leading-tight tracking-tight">
-            Halo, {firstName} 👋
+          <h1 className="text-[26px] sm:text-[28px] font-normal text-ink leading-tight tracking-tight">
+            Halo, {firstName}
           </h1>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-body-mid mt-2">
             Berikut ringkasan informasi akun Anda.
           </p>
         </div>
@@ -73,7 +73,7 @@ function DashboardContent() {
 
         {/* User profile card */}
         <div className="animate-fade-up" style={{ animationDelay: "260ms" }}>
-          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          <p className="font-mono text-[12px] text-body-mid uppercase tracking-[1.2px] mb-3">
             Profil Akun
           </p>
           <UserProfileCard user={user} />
@@ -81,7 +81,7 @@ function DashboardContent() {
 
         {/* Session status */}
         <div
-          className="animate-fade-up flex items-center justify-center gap-2 text-xs text-muted-foreground"
+          className="animate-fade-up flex items-center justify-center gap-2 text-xs text-body-mid"
           style={{ animationDelay: "340ms" }}
         >
           <span className="relative flex h-2 w-2">

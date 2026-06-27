@@ -1,17 +1,145 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #d4001a;
-  --color-brand-hover: #b0001a;
-  --color-brand-light: #fff0f1;
-  --color-brand-muted: #fde8ea;
-  --color-border: #e2e8f0;
-  --color-muted: #f8fafc;
-  --color-muted-foreground: #94a3b8;
-  --color-foreground: #0f172a;
-  --color-card: #ffffff;
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
+  /* ── Surface (Tactical Telemetry / Dark Substrate) ── */
+  --color-canvas: #0a0a0a;
+  --color-surface: #141313;
+  --color-surface-dim: #141313;
+  --color-surface-soft: #1a1c20;
+  --color-surface-container: #201f1f;
+  --color-surface-container-low: #1c1b1b;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-surface-container-high: #2a2a2a;
+  --color-surface-container-highest: #353434;
+  --color-surface-bright: #3a3939;
+  --color-surface-variant: #353434;
+
+  /* ── Background (legacy compat) ── */
+  --color-background: #141313;
+  --color-on-background: #e5e2e1;
+
+  /* ── Borders & dividers ── */
+  --color-hairline: #212327;
+  --color-outline: #8e9192;
+  --color-outline-variant: #444748;
+
+  /* ── Text ── */
+  --color-ink: #ffffff;
+  --color-ink-muted: #7d8187;
+  --color-body: #e5e2e1;
+  --color-body-mid: #7d8187;
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-variant: #c4c7c8;
+
+  /* ── Primary ── */
+  --color-primary: #ffffff;
+  --color-on-primary: #2f3131;
+  --color-primary-container: #e2e2e2;
+  --color-on-primary-container: #636565;
+  --color-primary-fixed: #e2e2e2;
+  --color-primary-fixed-dim: #c6c6c7;
+  --color-on-primary-fixed: #1a1c1c;
+  --color-on-primary-fixed-variant: #454747;
+  --color-inverse-primary: #5d5f5f;
+
+  /* ── Secondary ── */
+  --color-secondary: #c6c6cb;
+  --color-on-secondary: #2e3035;
+  --color-secondary-container: #47494d;
+  --color-on-secondary-container: #b7b8bd;
+  --color-secondary-fixed: #e2e2e7;
+  --color-secondary-fixed-dim: #c6c6cb;
+  --color-on-secondary-fixed: #1a1c20;
+  --color-on-secondary-fixed-variant: #45474b;
+
+  /* ── Tertiary ── */
+  --color-tertiary: #ffffff;
+  --color-on-tertiary: #2f3131;
+  --color-tertiary-container: #e2e2e2;
+  --color-on-tertiary-container: #636565;
+  --color-tertiary-fixed: #e2e2e2;
+  --color-tertiary-fixed-dim: #c6c6c7;
+  --color-on-tertiary-fixed: #1a1c1c;
+  --color-on-tertiary-fixed-variant: #454747;
+
+  /* ── Semantic ── */
+  --color-hazard-red: #ff2a2a;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  /* ── Inverse surface ── */
+  --color-inverse-surface: #e5e2e1;
+  --color-inverse-on-surface: #313030;
+
+  /* ── Surface tint ── */
+  --color-surface-tint: #c6c6c7;
+
+  /* ── Typography: Font Families ── */
+  --font-sans:
+    var(--font-geist-sans), "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), "JetBrains Mono", ui-monospace, SFMono-Regular,
+    Menlo, Monaco, monospace;
+
+  /* ── Typography: Display Scale ── */
+  --font-size-display-xl: 96px;
+  --font-size-display-xl--line-height: 1;
+  --font-size-display-xl--letter-spacing: -0.04em;
+  --font-size-display-xl--font-weight: 800;
+
+  --font-size-display-lg: 72px;
+  --font-size-display-lg--line-height: 1;
+  --font-size-display-lg--letter-spacing: -0.04em;
+  --font-size-display-lg--font-weight: 800;
+
+  --font-size-display-md: 48px;
+  --font-size-display-md--line-height: 1.1;
+  --font-size-display-md--letter-spacing: -0.03em;
+  --font-size-display-md--font-weight: 800;
+
+  --font-size-headline-lg: 32px;
+  --font-size-headline-lg--line-height: 1.2;
+  --font-size-headline-lg--letter-spacing: -0.02em;
+  --font-size-headline-lg--font-weight: 800;
+
+  /* ── Typography: Mono Labels ── */
+  --font-size-label-mono: 12px;
+  --font-size-label-mono--line-height: 1.2;
+  --font-size-label-mono--letter-spacing: 0.1em;
+  --font-size-label-mono--font-weight: 700;
+
+  --font-size-label-mono-xs: 10px;
+  --font-size-label-mono-xs--line-height: 1;
+  --font-size-label-mono-xs--letter-spacing: 0.15em;
+  --font-size-label-mono-xs--font-weight: 400;
+
+  /* ── Typography: Body ── */
+  --font-size-body-md: 16px;
+  --font-size-body-md--line-height: 1.5;
+  --font-size-body-md--letter-spacing: 0;
+  --font-size-body-md--font-weight: 400;
+
+  --font-size-body-sm: 14px;
+  --font-size-body-sm--line-height: 1.4;
+  --font-size-body-sm--letter-spacing: 0;
+  --font-size-body-sm--font-weight: 400;
+
+  /* ── Spacing ── */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 48px;
+  --spacing-gutter: 1px;
+  --spacing-unit: 4px;
+  --spacing-grid-hairline: 1px;
+
+  /* ── Border radius: zero everywhere (industrial) ── */
+  --radius: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-full: 9999px;
 }
 
 * {
@@ -27,10 +155,32 @@ body {
 
 body {
   font-family: var(--font-sans);
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f5f5f7;
-  color: #0f172a;
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+/* ── Industrial Grid: 1px gap with contrasting parent bg ── */
+.industrial-grid {
+  display: grid;
+  gap: 1px;
+  background-color: #212327;
+}
+
+.industrial-grid > * {
+  background-color: #0a0a0a;
+}
+
+/* ── Dot Pattern Background ── */
+.bg-dot-matrix {
+  background-image: radial-gradient(
+    circle at center,
+    #ffffff 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
 }
 
 /* ── Keyframes ──────────────────────────────────────────────── */
@@ -47,8 +197,12 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleIn {
@@ -63,11 +217,27 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-20px) scale(1.05); }
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
 }
 
-/* Custom entrance utilities */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ── Utility animations ─────────────────────────────────────── */
+
 @utility animate-fade-up {
   animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -87,6 +257,12 @@ body {
 @utility animate-float-delayed {
   animation: float 10s ease-in-out 2s infinite;
 }
+
+@utility animate-blink {
+  animation: blink 2s step-end infinite;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -25,36 +25,36 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
   return (
     <Card>
       {/* Profile header */}
-      <div className="flex items-center gap-4 px-8 py-6 border-b border-border">
+      <div className="flex items-center gap-4 px-6 py-6 border-b border-hairline">
         <Avatar src={user.avatarUrl} name={user.name} size={64} />
         <div className="min-w-0 flex-1">
-          <h2 className="text-[17px] font-bold text-foreground leading-tight truncate">
+          <h2 className="text-[17px] font-normal text-ink leading-tight truncate">
             {user.name ?? "\u2014"}
           </h2>
-          <p className="text-sm text-muted-foreground mt-0.5 truncate">
+          <p className="text-sm text-body-mid mt-0.5 truncate">
             {user.email}
           </p>
         </div>
-        <Badge variant={user.role === "ADMIN" ? "red" : "gray"}>
+        <Badge variant={user.role === "ADMIN" ? "accent" : "muted"}>
           {user.role}
         </Badge>
       </div>
 
       {/* Fields */}
       <CardContent className="px-0 py-0">
-        <div className="divide-y divide-border">
+        <div className="divide-y divide-hairline">
           {fields.map((f) => (
             <div
               key={f.label}
-              className="flex items-center gap-4 px-8 py-4 hover:bg-muted/30 transition-colors duration-150"
+              className="flex items-center gap-4 px-6 py-4 hover:bg-canvas-soft/30 transition-colors duration-150"
             >
-              <div className="flex items-center gap-2.5 w-32 shrink-0 text-muted-foreground">
-                <span className="text-muted-foreground/60">{f.icon}</span>
-                <span className="text-[11px] font-semibold uppercase tracking-wider">
+              <div className="flex items-center gap-2.5 w-32 shrink-0 text-body-mid">
+                <span className="text-body-mid/60">{f.icon}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[1.2px]">
                   {f.label}
                 </span>
               </div>
-              <span className="text-sm text-foreground font-mono break-all leading-snug min-w-0">
+              <span className="text-sm text-ink font-mono break-all leading-snug min-w-0">
                 {f.getValue(user)}
               </span>
             </div>

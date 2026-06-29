@@ -31,9 +31,7 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
           <h2 className="text-[17px] font-normal text-ink leading-tight truncate">
             {user.name ?? "\u2014"}
           </h2>
-          <p className="text-sm text-body-mid mt-0.5 truncate">
-            {user.email}
-          </p>
+          <p className="text-sm text-body-mid mt-0.5 truncate">{user.email}</p>
         </div>
         <Badge variant={user.role === "ADMIN" ? "accent" : "muted"}>
           {user.role}

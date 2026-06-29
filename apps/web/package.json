@@ -11,6 +11,7 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "@repo/ui": "*",
     "@tailwindcss/postcss": "^4.3.1",
     "class-variance-authority": "^0.7.1",

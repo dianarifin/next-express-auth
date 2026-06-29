@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
+
 // import "@repo/ui/styles.css";
 
 const geistSans = localFont({
@@ -23,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className="dark">
+    <html lang="id" className={cn("dark", "font-sans", geist.variable)}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
       </body>

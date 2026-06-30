@@ -1,8 +1,104 @@
-import { Request, Response, NextFunction } from "express";
 import passport from "@/config/passport";
 import { generateJwt } from "@/utils/jwt";
+import { NextFunction, Request, Response } from "express";
+import { loginWithEmail, registerUser } from "./auth.service";
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+
+
+// daftar sebagai pengguna baru
+export async function registerController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { name, email, password } = req.body;
+
+    // validasi sederhana
+    if (!name || !email || !password) {
+      res.status(400).json({ error: "Nama, email, and password are required" })
+    }
+
+    if (password.length < 6) {
+      res.status(400).json({ error: "Password must be at least 6 characters" })
+      return;
+    }
+
+    const user = await registerUser({ name, email, password });
+
+    // generate JWT langsung (auto-login setelah register)
+    const token = generateJwt({
+      id: user.id,
+      email: user.email,
+      name: user.name || "",
+      avatarUrl: user.avatarUrl,
+    })
+
+    // set httpOnly cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
+    })
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.avatarUrl,
+        role: user.role,
+      }
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+// email / password login controller
+export async function loginWithEmailController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({ error: "Email and password are required" })
+      return;
+    }
+
+    const user = await loginWithEmail(email, password);
+
+    // generate JWT (sama seperti google login)
+    const token = generateJwt({
+      id: user.id,
+      email: user.email,
+      name: user.name || "",
+      avatarUrl: user.avatarUrl
+    })
+
+    // set httpOnly cookies
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 1000, // 7 hari
+    })
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.avatarUrl,
+        role: user.role,
+      }
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 // ============================================================
 // GOOGLE CALLBACK

@@ -10,16 +10,26 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { Field, FieldGroup, FieldLabel, FieldContent, FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldContent,
+  FieldError,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001/auth/google"
+const BACKEND_URL =
+  process.env.BACKEND_URL || "http://localhost:3001/auth/google";
+const GOOGLE_AUTH_URL = `${BACKEND_URL}/auth/google`;
 
 export function LoginCard() {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const formSchema = z.object({
     email: z.string().min(1, { message: "Email is required" }),
@@ -28,7 +38,7 @@ export function LoginCard() {
       .min(6, { message: "Password must be at least 6 characters" }),
   });
 
-  type formSchemaType = z.infer<typeof formSchema>
+  type formSchemaType = z.infer<typeof formSchema>;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,24 +48,50 @@ export function LoginCard() {
     },
   });
 
-  const handleLogin = (data: formSchemaType) => {
-    console.log(data)
+  const handleLogin = async (data: formSchemaType) => {
+    startTransition(async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          credentials: "include",
+        });
 
-  }
+        const result = await res.json();
+
+        if (!res.ok) {
+          form.setError("email", { message: result.error || "Login failed" });
+          return;
+        }
+
+        // Simpan token di localStorage (sama seperti Google login)
+        localStorage.setItem("token", result.token);
+
+        // redirect ke dashboard
+        router.push("/dashboard");
+      } catch (err) {
+        form.setError("email", { message: "network error, please try again" });
+      }
+    });
+  };
   return (
     <div className="w-150 h-auto bg-neutral-800 border border-neutral-700/50  p-5">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>Enter your credentials to login</CardDescription>
-        </CardHeader>
+      <CardHeader>
+        <CardTitle className="text-2xl">Login</CardTitle>
+        <CardDescription>Enter your credentials to login</CardDescription>
+      </CardHeader>
       <CardContent className="space-y-6">
-        <form id="login-form" onSubmit={form.handleSubmit(handleLogin)} >
+        <form id="login-form" onSubmit={form.handleSubmit(handleLogin)}>
           <FieldGroup>
             <Controller
               name="email"
               control={form.control}
               render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid} className="border-none" >
+                <Field
+                  data-invalid={fieldState.invalid}
+                  className="border-none"
+                >
                   <FieldLabel htmlFor="email">Email</FieldLabel>
                   <FieldContent>
                     <Input
@@ -70,7 +106,7 @@ export function LoginCard() {
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
-                    </FieldContent>
+                  </FieldContent>
                 </Field>
               )}
             />
@@ -98,22 +134,23 @@ export function LoginCard() {
             />
           </FieldGroup>
         </form>
-        </CardContent>
+      </CardContent>
 
       <CardFooter className="mt-5 border-none">
-        <div className="flex flex-col w-full gap-2" >
-
-          <Button type="submit" form="login-form" className="w-full">
+        <div className="flex flex-col w-full gap-2">
+          <Button
+            disabled={isPending}
+            type="submit"
+            form="login-form"
+            className="w-full"
+          >
             Masuk
-        </Button>
-        <Button className="bg-blue-400" >
-            <Link href={BACKEND_URL}>
-              Sign In With Google
-          </Link>
+          </Button>
+          <Button className="bg-blue-400" disabled={isPending}>
+            <Link href={BACKEND_URL}>Sign In With Google</Link>
           </Button>
         </div>
-        </CardFooter>
-
+      </CardFooter>
     </div>
   );
 }

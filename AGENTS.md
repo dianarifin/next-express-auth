@@ -11,6 +11,7 @@ npm run format       # Prettier format everything
 ```
 
 Scoped:
+
 ```bash
 # From apps/backend
 npm run dev:watch    # tsx watch — auto-restart on change

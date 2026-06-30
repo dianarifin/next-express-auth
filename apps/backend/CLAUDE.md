@@ -80,6 +80,7 @@ src/
 ```
 
 Key improvements this structure enables:
+
 - `auth.controller.ts` separates HTTP concerns (cookie, redirect) from business logic
 - `auth.service.ts` isolates Prisma calls, making strategies testable without DB
 - `express.d.ts` types `req.user` as `JwtPayload` instead of `any`
@@ -87,6 +88,7 @@ Key improvements this structure enables:
 ### Session-Cookie Code (preserved as reference)
 
 Commented-out session middleware lives in:
+
 - `src/index.ts` — `express-session` setup, `passport.session()`
 - `src/config/passport.ts` — `serializeUser` / `deserializeUser`
 - `src/routes/auth.ts` — `{ session: true }` on the callback handler
@@ -95,13 +97,13 @@ This is intentional. The project uses JWT + httpOnly cookies as the active strat
 
 ### Key Env Variables
 
-| Variable | Purpose |
-|---|---|
-| `GOOGLE_CLIENT_ID` | OAuth app credential |
-| `GOOGLE_CLIENT_SECRET` | OAuth app credential |
-| `GOOGLE_CALLBACK_URL` | Must match Google Console redirect URI |
-| `JWT_SECRET` | Signing secret (defaults to `"your-secret-key"` — override in prod) |
-| `DATABASE_URL` | Neon PostgreSQL connection string |
+| Variable               | Purpose                                                             |
+| ---------------------- | ------------------------------------------------------------------- |
+| `GOOGLE_CLIENT_ID`     | OAuth app credential                                                |
+| `GOOGLE_CLIENT_SECRET` | OAuth app credential                                                |
+| `GOOGLE_CALLBACK_URL`  | Must match Google Console redirect URI                              |
+| `JWT_SECRET`           | Signing secret (defaults to `"your-secret-key"` — override in prod) |
+| `DATABASE_URL`         | Neon PostgreSQL connection string                                   |
 
 ### JWT Token Lifecycle
 

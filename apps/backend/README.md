@@ -53,13 +53,13 @@ npm run dev         # single run, no hot-reload
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Run server once via tsx |
-| `npm run dev:watch` | Run with hot-reload |
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm run start` | Run compiled output (`dist/index.js`) |
-| `npm run lint` | Run ESLint |
+| Command               | Description                            |
+| --------------------- | -------------------------------------- |
+| `npm run dev`         | Run server once via tsx                |
+| `npm run dev:watch`   | Run with hot-reload                    |
+| `npm run build`       | Compile TypeScript to `dist/`          |
+| `npm run start`       | Run compiled output (`dist/index.js`)  |
+| `npm run lint`        | Run ESLint                             |
 | `npm run check-types` | TypeScript type check without emitting |
 
 ---
@@ -75,6 +75,7 @@ GET /
 ```
 
 Response:
+
 ```json
 { "message": "Hello from backend!" }
 ```
@@ -100,6 +101,7 @@ http://localhost:3001/auth/google
 Automatic callback from Google after the user approves consent. Do not call this manually.
 
 **What happens here:**
+
 1. Passport verifies the authorization code with Google
 2. User is found or created in the database via Prisma
 3. A JWT token is generated
@@ -113,11 +115,13 @@ Automatic callback from Google after the user approves consent. Do not call this
 Returns the currently authenticated user's data. **Requires a valid JWT.**
 
 **Request header:**
+
 ```
 Authorization: Bearer <token>
 ```
 
 **Success response (200):**
+
 ```json
 {
   "user": {
@@ -130,9 +134,11 @@ Authorization: Bearer <token>
 ```
 
 **Error responses (401):**
+
 ```json
 { "error": "Unauthorized" }
 ```
+
 ```json
 { "error": "Invalid token" }
 ```
@@ -144,6 +150,7 @@ Authorization: Bearer <token>
 Instructs the frontend to delete the token. The server holds no state, so there is no session to destroy server-side.
 
 **Response (200):**
+
 ```json
 { "message": "Logout berhasil, hapus token di client" }
 ```
@@ -181,25 +188,25 @@ Tokens are valid for **1 hour** (`expiresIn: "1h"`).
 
 ## Libraries
 
-| Library | Version | Purpose |
-|---|---|---|
-| `express` | ^5.2.1 | Web framework |
-| `passport` | ^0.7.0 | Authentication middleware |
-| `passport-google-oauth2` | ^0.2.0 | Google OAuth 2.0 strategy |
-| `jsonwebtoken` | ^9.0.2 | Generate and verify JWTs |
-| `@repo/database` | workspace | Shared Prisma client |
-| `helmet` | ^8.2.0 | Security headers |
-| `cors` | ^2.8.6 | CORS configuration |
-| `cookie-parser` | ^1.4.7 | Cookie parsing |
-| `express-session` | ^1.19.0 | Session support (installed but inactive — see note below) |
+| Library                  | Version   | Purpose                                                   |
+| ------------------------ | --------- | --------------------------------------------------------- |
+| `express`                | ^5.2.1    | Web framework                                             |
+| `passport`               | ^0.7.0    | Authentication middleware                                 |
+| `passport-google-oauth2` | ^0.2.0    | Google OAuth 2.0 strategy                                 |
+| `jsonwebtoken`           | ^9.0.2    | Generate and verify JWTs                                  |
+| `@repo/database`         | workspace | Shared Prisma client                                      |
+| `helmet`                 | ^8.2.0    | Security headers                                          |
+| `cors`                   | ^2.8.6    | CORS configuration                                        |
+| `cookie-parser`          | ^1.4.7    | Cookie parsing                                            |
+| `express-session`        | ^1.19.0   | Session support (installed but inactive — see note below) |
 
 ### Dev Dependencies
 
-| Library | Purpose |
-|---|---|
-| `tsx` | Run TypeScript directly without compiling |
-| `typescript` | ^6.0.3 |
-| `@types/*` | Type definitions for all libraries above |
+| Library      | Purpose                                   |
+| ------------ | ----------------------------------------- |
+| `tsx`        | Run TypeScript directly without compiling |
+| `typescript` | ^6.0.3                                    |
+| `@types/*`   | Type definitions for all libraries above  |
 
 ---
 
@@ -211,11 +218,11 @@ The session-based auth code (`express-session`, `passport.session()`, `serialize
 
 Summary of the difference:
 
-| | Session-based (commented out) | JWT-based (active) |
-|---|---|---|
-| State | Stored on the server (session store) | Stateless — state lives in the token |
-| Logout | Destroy session on the server | Delete token on the client |
-| Scalability | Requires sticky sessions or a shared store | Easy to scale horizontally |
+|             | Session-based (commented out)              | JWT-based (active)                   |
+| ----------- | ------------------------------------------ | ------------------------------------ |
+| State       | Stored on the server (session store)       | Stateless — state lives in the token |
+| Logout      | Destroy session on the server              | Delete token on the client           |
+| Scalability | Requires sticky sessions or a shared store | Easy to scale horizontally           |
 
 ### JWT payload structure
 
@@ -231,5 +238,6 @@ Summary of the difference:
 ### Google OAuth setup
 
 In the [Google Cloud Console](https://console.cloud.google.com/apis/credentials):
+
 - **Authorized redirect URIs** must include: `http://localhost:3001/auth/google/callback`
 - For production, add your production callback URI as well

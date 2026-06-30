@@ -1,7 +1,7 @@
-import { Router } from "express";
 import passport from "@/config/passport";
 import { authenticateJwt } from "@/middleware/authenticate-jwt";
-import { googleCallback, getMe, logout } from "./auth.controller";
+import { Router } from "express";
+import { getMe, googleCallback, loginWithEmailController, logout, registerController } from "./auth.controller";
 
 const router = Router();
 
@@ -13,11 +13,14 @@ router.get(
   "/google",
   passport.authenticate("google", { scope: ["email", "profile"] }),
 );
-
 router.get("/google/callback", googleCallback);
 
-router.get("/me", authenticateJwt, getMe);
+// email and password
+router.post("/login", loginWithEmailController)
+router.post("/register", registerController)
 
+// protected
+router.get("/me", authenticateJwt, getMe);
 router.get("/logout", logout);
 
 export default router;

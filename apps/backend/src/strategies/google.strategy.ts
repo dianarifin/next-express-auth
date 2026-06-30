@@ -1,5 +1,8 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
-import { findOrCreateGoogleUser, GoogleProfile } from "@/modules/auth/auth.service";
+import {
+  findOrCreateGoogleUser,
+  GoogleProfile,
+} from "@/modules/auth/auth.service";
 
 // ============================================================
 // GOOGLE STRATEGY

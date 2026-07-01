@@ -29,6 +29,7 @@ export function PostDetail({ id }: { id: string }) {
   } = useQuery({
     queryKey: ["post", id],
     queryFn: () => fetchPost(id),
+    staleTime: 1000 * 60 * 5, // 5 minutess
   });
 
   if (isLoading) {

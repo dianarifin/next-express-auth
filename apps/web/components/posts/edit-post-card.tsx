@@ -69,7 +69,19 @@ export function EditPostCard({ id }: { id: string }) {
   });
 
   const mutation = useMutation({
-    mutationFn: async (data: FormSchemaType) => {},
+    mutationFn: async (data: FormSchemaType) => {
+      const res = await apiFetch(`/posts/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          title: data.title,
+          content: data.content,
+          published: data.published,
+        }),
+      });
+
+      const result = await res.json();
+      return result.post;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["post", id] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });

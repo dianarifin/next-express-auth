@@ -13,6 +13,7 @@ export function generateJwt(user: JwtPayload): string {
       avatarUrl: user.avatarUrl,
       role: user.role,
       provider: user.provider,
+      tokenVersion: user.tokenVersion,
     },
     JWT_SECRET,
     { expiresIn: "1d" },

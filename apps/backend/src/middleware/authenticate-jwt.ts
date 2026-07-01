@@ -1,7 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { prisma } from "@repo/database/lib/prisma";
+import { NextFunction, Request, Response } from "express";
 import { verifyJwt } from "../utils/jwt";
 
-export function authenticateJwt(
+export async function authenticateJwt(
   req: Request,
   res: Response,
   next: NextFunction,
@@ -19,6 +20,17 @@ export function authenticateJwt(
 
   try {
     const decoded = verifyJwt(token);
+
+    // cek tokenVersion dari DB
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      select: { tokenVersion: true },
+    });
+
+    if (!user || decoded.tokenVersion !== user.tokenVersion) {
+      return res.status(401).json({ error: "Token has been revoked" });
+    }
+
     req.user = decoded; // simpan payload ke req.user
     next();
   } catch (err) {

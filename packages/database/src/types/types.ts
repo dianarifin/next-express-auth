@@ -14,7 +14,7 @@ export type UserPublic = Prisma.UserGetPayload<{
   };
 }>;
 
-export type JwtPayload = UserPublic;
+export type JwtPayload = UserPublic & { tokenVersion: number };
 
 // post
 // post tanpa author

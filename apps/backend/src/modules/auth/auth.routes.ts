@@ -2,11 +2,11 @@ import passport from "@/config/passport";
 import { authenticateJwt } from "@/middleware/authenticate-jwt";
 import { Router } from "express";
 import {
-  getMe,
-  googleCallback,
-  loginWithEmailController,
-  logout,
-  registerController,
+    getMe,
+    googleCallback,
+    loginWithEmailController,
+    logout,
+    registerController,
 } from "./auth.controller";
 
 const router = Router();
@@ -27,6 +27,6 @@ router.post("/register", registerController);
 
 // protected
 router.get("/me", authenticateJwt, getMe);
-router.get("/logout", logout);
+router.get("/logout", authenticateJwt, logout);
 
 export default router;

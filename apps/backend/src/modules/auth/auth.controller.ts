@@ -1,5 +1,6 @@
 import passport from "@/config/passport";
 import { generateJwt } from "@/utils/jwt";
+import { prisma } from "@repo/database/lib/prisma";
 import { JwtPayload } from "@repo/database/types/types";
 import { NextFunction, Request, Response } from "express";
 import { loginWithEmail, registerUser } from "./auth.service";
@@ -35,6 +36,7 @@ export async function registerController(
       avatarUrl: user.avatarUrl,
       role: user.role,
       provider: user.provider || "local",
+      tokenVersion: user.tokenVersion,
     });
 
     // set httpOnly cookie
@@ -84,6 +86,7 @@ export async function loginWithEmailController(
       avatarUrl: user.avatarUrl,
       role: user.role,
       provider: user.provider || "local",
+      tokenVersion: user.tokenVersion,
     });
 
     // set httpOnly cookies
@@ -146,7 +149,8 @@ export function googleCallback(
         name: u.name || "",
         avatarUrl: u.avatarUrl,
         role: u.role,
-        provider: u.provider,
+        provider: u.provider || "local",
+        tokenVersion: u.tokenVersion ?? 0,
       });
 
       // SET cookie dari backend (port 3001) → browser simpan otomatis
@@ -198,7 +202,18 @@ export function getMe(req: Request, res: Response) {
 // });
 
 // logout route untuk pendekatan jwt-based auth, jadi logout dengan menghapus token di client (frontend)
-export function logout(_req: Request, res: Response) {
+export async function logout(req: Request, res: Response) {
+
   // frontend harus menghapus token dari localStorage atau cookie
+
+  // Increment tokenVersion di database untuk user yang logout, sehingga token lama menjadi tidak valid
+  if (req.user) {
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { tokenVersion: { increment: 1 } },
+    })
+  }
+
+  res.clearCookie("token"); // hapus cookie token di browser
   res.json({ message: "Logout berhasil, hapus token di client" });
 }

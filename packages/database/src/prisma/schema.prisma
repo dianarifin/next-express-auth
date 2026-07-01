@@ -23,6 +23,8 @@ model User {
   googleId String? @unique
   provider String? @default("local")
 
+  tokenVersion Int @default(0)
+
   posts Post[]
 
   createdAt DateTime @default(now())

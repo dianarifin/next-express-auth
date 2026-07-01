@@ -1,13 +1,9 @@
+import type { UserPublic } from "@repo/database/types/types";
+
 export const BACKEND =
   process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:3001";
 
-export interface UserData {
-  id: string;
-  email: string;
-  name: string | null;
-  avatarUrl: string | null;
-  role: "USER" | "ADMIN";
-}
+export type UserData = UserPublic;
 
 export async function fetchMe(token: string): Promise<UserData> {
   const res = await fetch(`${BACKEND}/auth/me`, {

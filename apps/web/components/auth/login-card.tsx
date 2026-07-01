@@ -24,7 +24,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const BACKEND_URL =
-  process.env.BACKEND_URL || "http://localhost:3001/auth/google";
+  process.env.BACKEND_URL || "http://localhost:3001";
 const GOOGLE_AUTH_URL = `${BACKEND_URL}/auth/google`;
 
 export function LoginCard() {
@@ -147,7 +147,7 @@ export function LoginCard() {
             Masuk
           </Button>
           <Button className="bg-blue-400" disabled={isPending}>
-            <Link href={BACKEND_URL}>Sign In With Google</Link>
+            <Link href={GOOGLE_AUTH_URL}>Sign In With Google</Link>
           </Button>
         </div>
       </CardFooter>

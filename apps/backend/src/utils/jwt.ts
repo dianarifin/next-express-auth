@@ -1,14 +1,9 @@
 // https://www.npmjs.com/package/jsonwebtoken
+import type { JwtPayload } from "@repo/database/types/types";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
-export interface JwtPayload {
-  id: string;
-  email: string;
-  name: string;
-  avatarUrl?: string | null;
-}
 
 export function generateJwt(user: JwtPayload): string {
   return jwt.sign(
@@ -17,6 +12,8 @@ export function generateJwt(user: JwtPayload): string {
       email: user.email,
       name: user.name,
       avatarUrl: user.avatarUrl,
+      role: user.role,
+      provider: user.provider,
     },
     JWT_SECRET,
     { expiresIn: "1h" },

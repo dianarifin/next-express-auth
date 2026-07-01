@@ -1,5 +1,6 @@
 import passport from "@/config/passport";
 import { generateJwt } from "@/utils/jwt";
+import { JwtPayload } from "@repo/database/types/types";
 import { NextFunction, Request, Response } from "express";
 import { loginWithEmail, registerUser } from "./auth.service";
 
@@ -29,6 +30,8 @@ export async function registerController(req: Request, res: Response, next: Next
       email: user.email,
       name: user.name || "",
       avatarUrl: user.avatarUrl,
+      role: user.role,
+      provider: user.provider || "local",
     })
 
     // set httpOnly cookie
@@ -72,7 +75,9 @@ export async function loginWithEmailController(req: Request, res: Response, next
       id: user.id,
       email: user.email,
       name: user.name || "",
-      avatarUrl: user.avatarUrl
+      avatarUrl: user.avatarUrl,
+      role: user.role,
+      provider: user.provider || "local",
     })
 
     // set httpOnly cookies
@@ -129,17 +134,15 @@ export function googleCallback(
         return res.redirect(`${FRONTEND_URL}/login?error=auth_failed`);
       }
 
-      const u = user as {
-        id: string;
-        email: string;
-        name: string | null;
-        avatarUrl: string | null;
-      };
+      const u = user as JwtPayload;
+
       const token = generateJwt({
         id: u.id,
         email: u.email,
         name: u.name || "",
         avatarUrl: u.avatarUrl,
+        role: u.role,
+        provider: u.provider,
       });
 
       // SET cookie dari backend (port 3001) → browser simpan otomatis

@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { IdIcon, MailIcon, LinkIcon, ShieldIcon } from "@/components/ui/icons";
-import type { UserData } from "@/lib/api";
+import type { UserData } from "@/lib/api"
 
 interface UserProfileCardProps {
   user: UserData;
@@ -11,13 +11,13 @@ interface UserProfileCardProps {
 interface Field {
   label: string;
   icon: React.ReactNode;
-  getValue: (u: UserData) => string;
+  getValue: (u: UserData) => string | null;
 }
 
 const fields: Field[] = [
   { label: "User ID", icon: <IdIcon />, getValue: (u) => u.id },
   { label: "Email", icon: <MailIcon />, getValue: (u) => u.email },
-  { label: "Provider", icon: <LinkIcon />, getValue: () => "Google OAuth 2.0" },
+  { label: "Provider", icon: <LinkIcon />, getValue: (u) => u.provider },
   { label: "Role", icon: <ShieldIcon />, getValue: (u) => u.role },
 ];
 

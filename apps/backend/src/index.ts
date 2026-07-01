@@ -1,11 +1,11 @@
 // Backend entry point - Express server with auth routes
-import express from "express";
-import passport from "@/config/passport";
 import corsMiddleware from "@/config/cors";
-import authRoutes from "@/modules/auth/auth.routes";
+import { morganConsole, morganLogger } from "@/config/logger";
+import passport from "@/config/passport";
 import { errorHandler } from "@/middleware/error-handler";
-import morgan from "morgan";
-import { morganLogger, morganConsole } from "@/config/logger";
+import authRoutes from "@/modules/auth/auth.routes";
+import postRoutes from "@/modules/posts/posts.routes";
+import express from "express";
 
 const app = express();
 const port: number = Number(process.env.PORT) || 3001;
@@ -42,6 +42,7 @@ app.use(passport.initialize());
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/posts", postRoutes)
 
 app.get("/", (_req, res) => {
   res.json({ message: "Hello from backend!" });

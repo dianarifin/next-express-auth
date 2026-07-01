@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { IdIcon, MailIcon, LinkIcon, ShieldIcon } from "@/components/ui/icons";
-import type { UserData } from "@/lib/api"
+import type { UserData } from "@/lib/api";
 
 interface UserProfileCardProps {
   user: UserData;

@@ -16,7 +16,7 @@ export function generateJwt(user: JwtPayload): string {
       provider: user.provider,
     },
     JWT_SECRET,
-    { expiresIn: "1h" },
+    { expiresIn: "1d" },
   );
 }
 

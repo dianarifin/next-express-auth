@@ -203,17 +203,17 @@ export function RegisterCard() {
 
       <CardFooter className="flex flex-col gap-3">
         <div className="flex flex-col w-full gap-2">
-        <Button
-          type="submit"
-          form="register-form"
-          className="w-full"
-          disabled={isPending}
-        >
-          {isPending ? "Creating account..." : "Create Account"}
-        </Button>
-        <Button className="bg-blue-400" disabled={isPending}>
-          <Link href={GOOGLE_AUTH_URL}>Register With Google</Link>
-        </Button>
+          <Button
+            type="submit"
+            form="register-form"
+            className="w-full"
+            disabled={isPending}
+          >
+            {isPending ? "Creating account..." : "Create Account"}
+          </Button>
+          <Button className="bg-blue-400" disabled={isPending}>
+            <Link href={GOOGLE_AUTH_URL}>Register With Google</Link>
+          </Button>
         </div>
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}

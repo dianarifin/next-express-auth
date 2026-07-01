@@ -4,8 +4,8 @@ import { RedirectIfAuthenticated } from "@/components/auth/redirect-if-authentic
 export default function LoginPage() {
   return (
     <RedirectIfAuthenticated>
-    <div className="w-full h-screen flex items-center justify-center  bg-neutral-900">
-      <LoginCard />
+      <div className="w-full h-screen flex items-center justify-center  bg-neutral-900">
+        <LoginCard />
       </div>
     </RedirectIfAuthenticated>
   );

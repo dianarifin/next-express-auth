@@ -3,8 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
-
+export function RedirectIfAuthenticated({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
 
   useEffect(() => {
@@ -12,8 +15,7 @@ export function RedirectIfAuthenticated({ children }: { children: React.ReactNod
     if (token) {
       router.replace("/dashboard");
     }
+  }, [router]);
 
-  }, [router])
-
-  return <>{children}</>
+  return <>{children}</>;
 }

@@ -31,9 +31,7 @@ export default function RootLayout({
   return (
     <html lang="id" className={cn("dark", "font-sans", geist.variable)}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

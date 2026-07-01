@@ -70,7 +70,11 @@ function DashboardContent() {
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-3">
           <StatCard label="Status" value="Aktif" delay={80} />
-          <StatCard label="Provider" value={user.provider ? user.provider : "local" } delay={140} />
+          <StatCard
+            label="Provider"
+            value={user.provider ? user.provider : "local"}
+            delay={140}
+          />
           <StatCard label="Role" value={user.role} delay={200} />
         </div>
 

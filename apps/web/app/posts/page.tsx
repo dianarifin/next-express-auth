@@ -1,9 +1,3 @@
-
 export default function PostsPage() {
-
-  return (
-    <div>
-
-    </div>
-  )
+  return <div></div>;
 }

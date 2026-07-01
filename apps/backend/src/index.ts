@@ -42,7 +42,7 @@ app.use(passport.initialize());
 
 // Routes
 app.use("/auth", authRoutes);
-app.use("/posts", postRoutes)
+app.use("/posts", postRoutes);
 
 app.get("/", (_req, res) => {
   res.json({ message: "Hello from backend!" });

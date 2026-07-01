@@ -4,6 +4,7 @@ import {
   createPostController,
   getPostController,
   listMyPostsController,
+  updatePostController,
 } from "./posts.controller";
 
 const router = Router();
@@ -14,5 +15,6 @@ router.use(authenticateJwt);
 router.post("/", createPostController);
 router.get("/", listMyPostsController);
 router.get("/:id", getPostController);
+router.put("/:id", updatePostController);
 
 export default router;

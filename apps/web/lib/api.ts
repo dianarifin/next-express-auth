@@ -22,7 +22,7 @@ export async function apiFetch(path: string, options: RequestInit) {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers, // `...options.headers` — menyebar isi dari `headers` si caller.
-    }
+    },
   });
 
   if (res.status === 401) {

@@ -452,28 +452,28 @@ Tokens are valid for **1 hour** (`expiresIn: "1h"`).
 
 Backend dan frontend menggunakan type yang sama dari Prisma schema via `@repo/database/types`, sehingga response API konsisten di kedua sisi.
 
-| Type | Deskripsi |
-|---|---|
-| `UserPublic` | Data user yang aman dikirim ke frontend |
-| `JwtPayload` | Payload di dalam JWT (extends UserPublic) |
-| `PostPublic` | Data post tanpa relasi author |
-| `PostWithAuthor` | Data post termasuk informasi author |
+| Type             | Deskripsi                                 |
+| ---------------- | ----------------------------------------- |
+| `UserPublic`     | Data user yang aman dikirim ke frontend   |
+| `JwtPayload`     | Payload di dalam JWT (extends UserPublic) |
+| `PostPublic`     | Data post tanpa relasi author             |
+| `PostWithAuthor` | Data post termasuk informasi author       |
 
 ---
 
 ## Libraries
 
-| Library                  | Version   | Purpose                                                   |
-| ------------------------ | --------- | --------------------------------------------------------- |
-| `express`                | ^5.2.1    | Web framework                                             |
-| `passport`               | ^0.7.0    | Authentication middleware                                 |
-| `passport-google-oauth2` | ^0.2.0    | Google OAuth 2.0 strategy                                 |
-| `jsonwebtoken`           | ^9.0.2    | Generate and verify JWTs                                  |
-| `bcryptjs`               | ^2.4.3    | Password hashing                                          |
-| `@repo/database`         | workspace | Shared Prisma client & types                              |
-| `helmet`                 | ^8.2.0    | Security headers                                          |
-| `cors`                   | ^2.8.6    | CORS configuration                                        |
-| `morgan`                 | ^1.11.0   | HTTP request logging                                      |
+| Library                  | Version   | Purpose                      |
+| ------------------------ | --------- | ---------------------------- |
+| `express`                | ^5.2.1    | Web framework                |
+| `passport`               | ^0.7.0    | Authentication middleware    |
+| `passport-google-oauth2` | ^0.2.0    | Google OAuth 2.0 strategy    |
+| `jsonwebtoken`           | ^9.0.2    | Generate and verify JWTs     |
+| `bcryptjs`               | ^2.4.3    | Password hashing             |
+| `@repo/database`         | workspace | Shared Prisma client & types |
+| `helmet`                 | ^8.2.0    | Security headers             |
+| `cors`                   | ^2.8.6    | CORS configuration           |
+| `morgan`                 | ^1.11.0   | HTTP request logging         |
 
 ### Dev Dependencies
 
@@ -502,12 +502,12 @@ Backend dan frontend menggunakan type yang sama dari Prisma schema via `@repo/da
 
 ### Dua metode auth
 
-|             | Email/Password (active)              | Google OAuth (active)                       |
-| ----------- | ------------------------------------ | ------------------------------------------- |
-| Endpoint    | `POST /auth/login`, `/register`      | `GET /auth/google`                          |
-| Validasi    | bcrypt hash comparison               | Google OAuth 2.0 flow                       |
-| User fields | `name`, `email`, `password`          | `googleId`, `provider: "google"`            |
-| Multi-akun  | Satu email = satu akun               | Bisa gabung (field `provider` membedakan)   |
+|             | Email/Password (active)         | Google OAuth (active)                     |
+| ----------- | ------------------------------- | ----------------------------------------- |
+| Endpoint    | `POST /auth/login`, `/register` | `GET /auth/google`                        |
+| Validasi    | bcrypt hash comparison          | Google OAuth 2.0 flow                     |
+| User fields | `name`, `email`, `password`     | `googleId`, `provider: "google"`          |
+| Multi-akun  | Satu email = satu akun          | Bisa gabung (field `provider` membedakan) |
 
 ### Google OAuth setup
 
@@ -515,4 +515,4 @@ In the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 
 - **Authorized redirect URIs** must include: `http://localhost:3001/auth/google/callback`
 - For production, add your production callback URI as well
-`
+  `

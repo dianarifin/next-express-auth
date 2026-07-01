@@ -1,7 +1,7 @@
-import { EditPostCard } from "@/components/posts/edit-post-card";
+import { PostDetail } from "@/components/posts/post-detail";
 import { RequireAuth } from "@/components/auth/require-auth";
 
-export default async function EditPostPage({
+export default async function PostPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -11,7 +11,7 @@ export default async function EditPostPage({
   return (
     <RequireAuth>
       <div className="min-h-screen py-8">
-        <EditPostCard id={id} />
+        <PostDetail id={id} />
       </div>
     </RequireAuth>
   );

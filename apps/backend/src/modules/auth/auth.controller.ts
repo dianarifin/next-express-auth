@@ -6,19 +6,22 @@ import { loginWithEmail, registerUser } from "./auth.service";
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
-
 // daftar sebagai pengguna baru
-export async function registerController(req: Request, res: Response, next: NextFunction) {
+export async function registerController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const { name, email, password } = req.body;
 
     // validasi sederhana
     if (!name || !email || !password) {
-      res.status(400).json({ error: "Nama, email, and password are required" })
+      res.status(400).json({ error: "Nama, email, and password are required" });
     }
 
     if (password.length < 6) {
-      res.status(400).json({ error: "Password must be at least 6 characters" })
+      res.status(400).json({ error: "Password must be at least 6 characters" });
       return;
     }
 
@@ -32,7 +35,7 @@ export async function registerController(req: Request, res: Response, next: Next
       avatarUrl: user.avatarUrl,
       role: user.role,
       provider: user.provider || "local",
-    })
+    });
 
     // set httpOnly cookie
     res.cookie("token", token, {
@@ -40,7 +43,7 @@ export async function registerController(req: Request, res: Response, next: Next
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
-    })
+    });
 
     res.status(201).json({
       token,
@@ -50,21 +53,24 @@ export async function registerController(req: Request, res: Response, next: Next
         name: user.name,
         avatarUrl: user.avatarUrl,
         role: user.role,
-      }
-    })
-
+      },
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
 // email / password login controller
-export async function loginWithEmailController(req: Request, res: Response, next: NextFunction) {
+export async function loginWithEmailController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      res.status(400).json({ error: "Email and password are required" })
+      res.status(400).json({ error: "Email and password are required" });
       return;
     }
 
@@ -78,7 +84,7 @@ export async function loginWithEmailController(req: Request, res: Response, next
       avatarUrl: user.avatarUrl,
       role: user.role,
       provider: user.provider || "local",
-    })
+    });
 
     // set httpOnly cookies
     res.cookie("token", token, {
@@ -86,7 +92,7 @@ export async function loginWithEmailController(req: Request, res: Response, next
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 1000, // 7 hari
-    })
+    });
 
     res.json({
       token,
@@ -96,14 +102,12 @@ export async function loginWithEmailController(req: Request, res: Response, next
         name: user.name,
         avatarUrl: user.avatarUrl,
         role: user.role,
-      }
-    })
-
+      },
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
-
 
 // ============================================================
 // GOOGLE CALLBACK

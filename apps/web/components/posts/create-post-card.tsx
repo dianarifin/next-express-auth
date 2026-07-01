@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   CardContent,
@@ -38,6 +38,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 
 export function CreatePostCard() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -57,12 +58,13 @@ export function CreatePostCard() {
           content: data.content,
           published: data.published,
         }),
-      })
+      });
 
       const result = await res.json();
       return result.post;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       router.push("/posts");
     },
     onError: (error: Error) => {

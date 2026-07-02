@@ -11,6 +11,7 @@ export type UserPublic = Prisma.UserGetPayload<{
     avatarUrl: true;
     role: true;
     provider: true;
+    emailVerified: true;
   };
 }>;
 

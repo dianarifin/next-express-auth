@@ -25,6 +25,11 @@ model User {
 
   tokenVersion Int @default(0)
 
+  // email verification
+  emailVerified Boolean @default(false)
+  verificationToken String?
+  verificationTokenExpiresAt DateTime?
+
   posts Post[]
 
   createdAt DateTime @default(now())

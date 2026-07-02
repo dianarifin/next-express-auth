@@ -1,5 +1,6 @@
 import { prisma } from "@repo/database/lib/prisma";
 import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
 
 export interface GoogleProfile {
   id: string;
@@ -23,6 +24,9 @@ export async function findOrCreateGoogleUser(profile: GoogleProfile) {
         name: profile.displayName,
         avatarUrl: profile.photos?.[0]?.value ?? null,
         provider: "google",
+        emailVerified: true, // google sudah verified
+        verificationToken: null,
+        verificationTokenExpiresAt: null,
       },
     });
   } else {
@@ -86,4 +90,74 @@ export async function loginWithEmail(email: string, password: string) {
   }
 
   return user;
+}
+
+// generate token verifikasi email
+export async function generateVerificationToken(userId: string) {
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 jam
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      verificationToken: token,
+      verificationTokenExpiresAt: expiresAt,
+    },
+  });
+
+  return token;
+}
+
+// verifikasi email dengan token
+export async function verifyEmailWithToken(token: string) {
+  const user = await prisma.user.findFirst({
+    where: { verificationToken: token },
+  });
+
+  if (!user) {
+    throw Object.assign(new Error("Invalid verification token"), {
+      status: 400,
+    });
+  }
+
+  if (user.emailVerified) {
+    throw Object.assign(new Error("Email already verified"), { status: 400 });
+  }
+
+  if (
+    !user.verificationTokenExpiresAt ||
+    user.verificationTokenExpiresAt < new Date()
+  ) {
+    throw Object.assign(new Error("Verification token has expired"), {
+      status: 400,
+    });
+  }
+
+  // update user: tandai email terverfikasi, hapus token
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      emailVerified: true,
+      verificationToken: null,
+      verificationTokenExpiresAt: null,
+    },
+  });
+
+  return;
+}
+
+// kirim ulang email verifikasi
+export async function resendVerificationEmail(userId: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    throw Object.assign(new Error("User not found"), { status: 404 });
+  }
+
+  if (user.emailVerified) {
+    throw Object.assign(new Error("Email already verified"), { status: 400 });
+  }
+
+  const token = await generateVerificationToken(userId);
+  return { user, token };
 }

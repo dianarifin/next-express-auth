@@ -2,11 +2,13 @@ import passport from "@/config/passport";
 import { authenticateJwt } from "@/middleware/authenticate-jwt";
 import { Router } from "express";
 import {
-    getMe,
-    googleCallback,
-    loginWithEmailController,
-    logout,
-    registerController,
+  getMe,
+  googleCallback,
+  loginWithEmailController,
+  logout,
+  registerController,
+  resendVerificationController,
+  verifyEmailController,
 } from "./auth.controller";
 
 const router = Router();
@@ -24,6 +26,14 @@ router.get("/google/callback", googleCallback);
 // email and password
 router.post("/login", loginWithEmailController);
 router.post("/register", registerController);
+
+// email verification
+router.get("/verify-email", verifyEmailController);
+router.get(
+  "/resend-verification",
+  authenticateJwt,
+  resendVerificationController,
+);
 
 // protected
 router.get("/me", authenticateJwt, getMe);

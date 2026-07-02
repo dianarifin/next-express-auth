@@ -1,9 +1,16 @@
 import passport from "@/config/passport";
+import { sendVerificationEmail } from "@/utils/email";
 import { generateJwt } from "@/utils/jwt";
 import { prisma } from "@repo/database/lib/prisma";
 import { JwtPayload } from "@repo/database/types/types";
 import { NextFunction, Request, Response } from "express";
-import { loginWithEmail, registerUser } from "./auth.service";
+import {
+  generateVerificationToken,
+  loginWithEmail,
+  registerUser,
+  resendVerificationEmail,
+  verifyEmailWithToken,
+} from "./auth.service";
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
@@ -28,6 +35,15 @@ export async function registerController(
 
     const user = await registerUser({ name, email, password });
 
+    // generate token dan kirim email verifikasi
+    try {
+      const token = await generateVerificationToken(user.id);
+      await sendVerificationEmail(user.email, user.name || "User", token);
+    } catch (emailErr) {
+      console.error("[Register] gagal kirim email verifikasi", emailErr);
+      // Jangan gagalkan registrasi — user bisa minta kirim ulang nanti
+    }
+
     // generate JWT langsung (auto-login setelah register)
     const token = generateJwt({
       id: user.id,
@@ -37,6 +53,7 @@ export async function registerController(
       role: user.role,
       provider: user.provider || "local",
       tokenVersion: user.tokenVersion,
+      emailVerified: user.emailVerified,
     });
 
     // set httpOnly cookie
@@ -55,8 +72,56 @@ export async function registerController(
         name: user.name,
         avatarUrl: user.avatarUrl,
         role: user.role,
+        emailVerified: user.emailVerified,
       },
     });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// verifikasi email via token
+export async function verifyEmailController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      res.status(400).json({ error: "Token is required" });
+      return;
+    }
+
+    const user = await verifyEmailWithToken(token);
+
+    res.json({
+      message: "Email berhasil diverifikasi",
+      emailVerified: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// kirim ulang email verifikasi
+export async function resendVerificationController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const { user, token } = await resendVerificationEmail(userId);
+    await sendVerificationEmail(user.email, user.name || "User", token);
+
+    res.json({ message: "Email verifikasi telah dikirim ulang" });
   } catch (error) {
     next(error);
   }
@@ -87,6 +152,7 @@ export async function loginWithEmailController(
       role: user.role,
       provider: user.provider || "local",
       tokenVersion: user.tokenVersion,
+      emailVerified: user.emailVerified,
     });
 
     // set httpOnly cookies
@@ -151,6 +217,7 @@ export function googleCallback(
         role: u.role,
         provider: u.provider || "local",
         tokenVersion: u.tokenVersion ?? 0,
+        emailVerified: u.emailVerified,
       });
 
       // SET cookie dari backend (port 3001) → browser simpan otomatis
@@ -203,7 +270,6 @@ export function getMe(req: Request, res: Response) {
 
 // logout route untuk pendekatan jwt-based auth, jadi logout dengan menghapus token di client (frontend)
 export async function logout(req: Request, res: Response) {
-
   // frontend harus menghapus token dari localStorage atau cookie
 
   // Increment tokenVersion di database untuk user yang logout, sehingga token lama menjadi tidak valid
@@ -211,7 +277,7 @@ export async function logout(req: Request, res: Response) {
     await prisma.user.update({
       where: { id: req.user.id },
       data: { tokenVersion: { increment: 1 } },
-    })
+    });
   }
 
   res.clearCookie("token"); // hapus cookie token di browser

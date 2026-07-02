@@ -5,7 +5,18 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"],
+      "env": [
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "GOOGLE_CALLBACK_URL",
+        "DATABASE_URL",
+        "FRONTEND_URL",
+        "BACKEND_URL",
+        "JWT_SECRET",
+        "RESEND_API_KEY",
+        "EMAIL_FROM"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]

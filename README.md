@@ -1,159 +1,156 @@
-# Turborepo starter
+# Next.js + Express Auth
 
-This Turborepo starter is maintained by the Turborepo core team.
+Monorepo fullstack autentikasi dengan **Next.js 16** (frontend) dan **Express 5** (backend), menggunakan **JWT** stateless dan **Prisma** + **PostgreSQL**.
 
-## Using this example
+## Struktur Proyek
 
-Run the following command:
-
-```sh
-npx create-turbo@latest
 ```
 
-## What's inside?
+next-express-auth/
+├── apps/
+│ ├── web/ # Next.js 16 (port 3000)
+│ └── backend/ # Express 5 (port 3001)
+├── packages/
+│ ├── database/ # Prisma schema & client
+│ ├── eslint-config/
+│ └── typescript-config/
+├── package.json # Root monorepo (npm workspaces + Turbo)
+└── turbo.json
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
 ```
 
-Without global `turbo`, use your package manager:
+## Prasyarat
 
-```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
+- **Node.js** >= 18
+- **PostgreSQL** — database harus sudah running
+
+## Setup
+
+### 1. Install dependencies
+
+```bash
+npm install
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### 2. Setup database
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Buat database PostgreSQL, lalu buat file `.env` di `apps/backend/`:
 
-```sh
-turbo build --filter=docs
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/nama_database"
+JWT_SECRET="rahasia-kamu"
+FRONTEND_URL="http://localhost:3000"
 ```
 
-Without global `turbo`:
+Jalankan migrasi database:
 
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+```bash
+cd packages/database
+npm run db:push
 ```
 
-### Develop
+### 3. Jalankan development
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+npm run dev
 ```
 
-Without global `turbo`, use your package manager:
+Perintah ini menjalankan **web** (port 3000) dan **backend** (port 3001) secara bersamaan via Turbo.
 
-```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
+## Perintah Umum
+
+| Perintah              | Keterangan                  |
+| --------------------- | --------------------------- |
+| `npm run dev`         | Jalankan web + backend      |
+| `npm run build`       | Build semua apps & packages |
+| `npm run lint`        | Lint semua package          |
+| `npm run check-types` | Type-check semua            |
+| `npm run format`      | Prettier format             |
+
+### Scoped commands
+
+```bash
+# Backend
+cd apps/backend
+npm run dev:watch    # Auto-restart saat ada perubahan
+npm run test         # Jalankan test (Vitest)
+
+# Database
+cd packages/database
+npm run db:generate  # Regenerate Prisma client setelah ubah schema
+npm run db:push      # Sync schema ke DB (tanpa migration)
+npm run db:migrate   # Buat migration
+npm run db:studio    # Buka Prisma Studio
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## API Endpoints
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+### Auth (`/auth`)
 
-```sh
-turbo dev --filter=web
+| Method | Endpoint                    | Auth         | Deskripsi                    |
+| ------ | --------------------------- | ------------ | ---------------------------- |
+| GET    | `/auth/google`              | -            | Redirect ke Google OAuth     |
+| GET    | `/auth/google/callback`     | -            | Callback dari Google         |
+| POST   | `/auth/register`            | -            | Daftar akun baru             |
+| POST   | `/auth/login`               | -            | Login email/password         |
+| GET    | `/auth/me`                  | Bearer Token | Lihat profile user           |
+| GET    | `/auth/logout`              | Bearer Token | Logout (invalidasi token)    |
+| GET    | `/auth/verify-email`        | -            | Verifikasi email via token   |
+| GET    | `/auth/resend-verification` | Bearer Token | Kirim ulang email verifikasi |
+
+### Posts (`/posts`) — semua butuh autentikasi
+
+| Method | Endpoint     | Deskripsi                   |
+| ------ | ------------ | --------------------------- |
+| POST   | `/posts`     | Buat post baru              |
+| GET    | `/posts`     | Lihat semua post milik user |
+| GET    | `/posts/:id` | Lihat detail post           |
+| PUT    | `/posts/:id` | Update post (hanya pemilik) |
+| DELETE | `/posts/:id` | Hapus post (hanya pemilik)  |
+
+## Alur Autentikasi
+
+1. **Login** — user login via email/password atau Google OAuth
+2. **JWT** — backend generate JWT, dikirim sebagai httpOnly cookie + response body
+3. **LocalStorage** — frontend simpan token dari response body
+4. **Authorization Header** — setiap request protected pakai `Bearer <token>`
+5. **Logout** — backend increment `tokenVersion`, token lama jadi tidak valid
+
+## Testing
+
+```bash
+cd apps/backend
+npm run test          # Vitest run
 ```
 
-Without global `turbo`:
+Test menggunakan **Vitest** + **Supertest** — semua dependensi eksternal (database, email, Google OAuth) di-mock, jadi tidak perlu koneksi ke service sungguhan.
 
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
+### Test coverage
+
+| Endpoint                        | Sukses | Error         |
+| ------------------------------- | ------ | ------------- |
+| `GET /`                         | ✅     | -             |
+| `POST /auth/register`           | ✅     | 400, 400, 500 |
+| `POST /auth/login`              | ✅     | 400, 500      |
+| `GET /auth/me`                  | ✅     | 401, 401, 401 |
+| `GET /auth/logout`              | ✅     | -             |
+| `GET /auth/resend-verification` | ✅     | -             |
+| `POST /posts`                   | ✅     | 400           |
+| `GET /posts`                    | ✅     | -             |
+| `GET /posts/:id`                | ✅     | 404           |
+| `PUT /posts/:id`                | ✅     | 403           |
+| `DELETE /posts/:id`             | ✅     | 404           |
+
+## Teknologi
+
+| Bagian   | Teknologi                                         |
+| -------- | ------------------------------------------------- |
+| Frontend | Next.js 16, React 19, Tailwind v4, TanStack Query |
+| Backend  | Express 5, Passport.js, JWT                       |
+| Database | PostgreSQL, Prisma 7                              |
+| Monorepo | Turbo, npm workspaces                             |
+| Testing  | Vitest, Supertest                                 |
+
 ```
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
 ```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)

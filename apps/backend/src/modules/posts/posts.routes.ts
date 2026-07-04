@@ -2,6 +2,7 @@ import { authenticateJwt } from "@/middleware/authenticate-jwt";
 import { Router } from "express";
 import {
   createPostController,
+  deletePostController,
   getPostController,
   listMyPostsController,
   updatePostController,
@@ -16,5 +17,6 @@ router.post("/", createPostController);
 router.get("/", listMyPostsController);
 router.get("/:id", getPostController);
 router.put("/:id", updatePostController);
+router.delete("/:id", deletePostController);
 
 export default router;

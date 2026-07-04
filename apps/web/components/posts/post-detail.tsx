@@ -6,7 +6,8 @@ import { apiFetch } from "@/lib/api";
 import type { PostWithAuthor } from "@repo/database/types/types";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { DeletePostDialog } from "./delete-post-dialog";
 
 async function fetchPost(id: string): Promise<PostWithAuthor> {
   const res = await apiFetch(`/posts/${id}`, { method: "GET" });
@@ -120,15 +121,17 @@ export function PostDetail({ id }: { id: string }) {
           </div>
         </div>
       </div>
-
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={() => router.push(`/posts/${id}/edit-post`)}
-      >
-        <Pencil className="size-4" />
-        Edit Post
-      </Button>
+      <div className="flex flex-col gap-2 z-1000">
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => router.push(`/posts/${id}/edit-post`)}
+        >
+          <Pencil className="size-4" />
+          Edit Post
+        </Button>
+        <DeletePostDialog id={id} onSuccess={() => router.push("/posts")} />
+      </div>
     </div>
   );
 }

@@ -6,10 +6,5 @@ export default defineConfig({
   clean: true,
   minify: true,
   noExternal: ["@repo/database"],
-  external: [
-    "dotenv",
-    "@prisma/client",
-    "@prisma/adapter-pg",
-    "pg",
-  ],
+  external: ["dotenv", "@prisma/client", "@prisma/adapter-pg", "pg"],
 });

@@ -2,6 +2,7 @@ import type { PostPublic, PostWithAuthor } from "@repo/database/types/types";
 import { NextFunction, Request, Response } from "express";
 import {
   createPost,
+  deletePost,
   getPostsById,
   getPostsByUser,
   updatePost,
@@ -97,6 +98,35 @@ export async function updatePostController(
       published,
     });
     res.json({ post: post as PostWithAuthor });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// delete post by id
+export async function deletePostController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const id = req.params.id as string;
+
+    const existing = await getPostsById(id);
+    if (!existing) {
+      res.status(404).json({ error: "Post not found" });
+      return;
+    }
+
+    if (existing.authorId !== req.user!.id) {
+      res
+        .status(404)
+        .json({ error: "You are not authorized to delete this post" });
+      return;
+    }
+
+    await deletePost(id);
+    res.json({ message: "Post deleted successfully" });
   } catch (error) {
     next(error);
   }

@@ -8,7 +8,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build":  "tsup src/index.ts --format esm --clean --minify",
+    "build": "tsup src/index.ts --format esm --clean --minify",
     "postinstall": "prisma generate --schema ../../packages/database/src/prisma/schema.prisma",
     "dev": "tsx src/index.ts",
     "dev:watch": "tsx watch src/index.ts",

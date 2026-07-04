@@ -1,7 +1,0 @@
-{
-  "buildCommand": "npx tsup src/index.ts --format esm --clean --minify",
-  "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.js" }
-  ]
-}

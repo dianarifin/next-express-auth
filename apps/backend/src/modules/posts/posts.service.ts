@@ -53,6 +53,10 @@ export async function getPostsById(id: string) {
   });
 }
 
+export async function deletePost(id: string) {
+  await prisma.post.delete({ where: { id } });
+}
+
 export async function updatePost(
   id: string,
   data: { title?: string; content?: string; published?: boolean },

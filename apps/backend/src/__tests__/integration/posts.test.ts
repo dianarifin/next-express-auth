@@ -1,26 +1,11 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
-import request from "supertest";
 import { prisma } from "@repo/database/lib/prisma";
+import request from "supertest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mockPost } from "../fixtures/post.fixture";
 import { createTestApp } from "../helpers/app";
-import { generateTestToken, authHeader } from "../helpers/auth";
+import { authHeader, generateTestToken } from "../helpers/auth";
 
 const app = createTestApp();
-
-const mockPost = {
-  id: "post-1",
-  title: "Test Post",
-  content: "Test content",
-  published: false,
-  authorId: "test-user-id",
-  createdAt: new Date("2025-01-01"),
-  updatedAt: new Date("2025-01-01"),
-  author: {
-    id: "test-user-id",
-    name: "Test User",
-    email: "test@example.com",
-    avatarUrl: null,
-  },
-};
 
 const token = generateTestToken();
 

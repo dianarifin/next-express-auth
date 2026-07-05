@@ -1,29 +1,11 @@
 import { prisma } from "@repo/database/lib/prisma";
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mockUser } from "../fixtures/user.fixture";
 import { createTestApp } from "../helpers/app";
 import { authHeader, generateTestToken } from "../helpers/auth";
 
 const app = createTestApp();
-
-// mock data
-const mockUser = {
-  id: "test-user-id",
-  email: "test@example.com",
-  name: "Test User",
-  password: "$2a$10$mocked-hash",
-  avatarUrl: null,
-  role: "USER" as const,
-  provider: "local",
-  tokenVersion: 0,
-  emailVerified: false,
-  googleId: null,
-  verificationToken: null,
-  verificationTokenExpiresAt: null,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
 
 const mockUserPublic = {
   id: mockUser.id,

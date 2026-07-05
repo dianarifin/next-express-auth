@@ -19,6 +19,7 @@ vi.mock("@repo/database/lib/prisma", () => ({
       findFirst: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      findMany: vi.fn(),
     },
     post: {
       create: vi.fn(),

@@ -323,7 +323,7 @@ export async function updateUserRoleController(
 
     // validasi user login harus admin
     if (req.user?.role !== Role.ADMIN) {
-      res.status(403).json({ error: "Role must be either USER or ADMIN" })
+      res.status(403).json({ error: "Only admins can change user roles" })
       return;
     }
 

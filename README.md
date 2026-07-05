@@ -5,18 +5,16 @@ Monorepo fullstack autentikasi dengan **Next.js 16** (frontend) dan **Express 5*
 ## Struktur Proyek
 
 ```
-
 next-express-auth/
 ├── apps/
-│ ├── web/ # Next.js 16 (port 3000)
-│ └── backend/ # Express 5 (port 3001)
+│   ├── web/          # Next.js 16 (port 3000)
+│   └── backend/      # Express 5 (port 3001)
 ├── packages/
-│ ├── database/ # Prisma schema & client
-│ ├── eslint-config/
-│ └── typescript-config/
-├── package.json # Root monorepo (npm workspaces + Turbo)
+│   ├── database/     # Prisma schema & client
+│   ├── eslint-config/
+│   └── typescript-config/
+├── package.json      # Root monorepo (npm workspaces + Turbo)
 └── turbo.json
-
 ```
 
 ## Prasyarat
@@ -42,7 +40,7 @@ JWT_SECRET="rahasia-kamu"
 FRONTEND_URL="http://localhost:3000"
 ```
 
-Jalankan migrasi database:
+Jalankan sync schema:
 
 ```bash
 cd packages/database
@@ -55,7 +53,9 @@ npm run db:push
 npm run dev
 ```
 
-Perintah ini menjalankan **web** (port 3000) dan **backend** (port 3001) secara bersamaan via Turbo.
+Menjalankan **web** (port 3000) dan **backend** (port 3001) secara bersamaan via Turbo.
+
+---
 
 ## Perintah Umum
 
@@ -73,7 +73,6 @@ Perintah ini menjalankan **web** (port 3000) dan **backend** (port 3001) secara 
 # Backend
 cd apps/backend
 npm run dev:watch    # Auto-restart saat ada perubahan
-npm run test         # Jalankan test (Vitest)
 
 # Database
 cd packages/database
@@ -83,22 +82,26 @@ npm run db:migrate   # Buat migration
 npm run db:studio    # Buka Prisma Studio
 ```
 
+---
+
 ## API Endpoints
 
-### Auth (`/auth`)
+### Auth
 
-| Method | Endpoint                    | Auth         | Deskripsi                    |
-| ------ | --------------------------- | ------------ | ---------------------------- |
-| GET    | `/auth/google`              | -            | Redirect ke Google OAuth     |
-| GET    | `/auth/google/callback`     | -            | Callback dari Google         |
-| POST   | `/auth/register`            | -            | Daftar akun baru             |
-| POST   | `/auth/login`               | -            | Login email/password         |
-| GET    | `/auth/me`                  | Bearer Token | Lihat profile user           |
-| GET    | `/auth/logout`              | Bearer Token | Logout (invalidasi token)    |
-| GET    | `/auth/verify-email`        | -            | Verifikasi email via token   |
-| GET    | `/auth/resend-verification` | Bearer Token | Kirim ulang email verifikasi |
+| Method | Endpoint                    | Auth | Role  | Deskripsi                 |
+| ------ | --------------------------- | ---- | ----- | ------------------------- |
+| POST   | `/auth/register`            | ✗    | —     | Register + auto-login     |
+| POST   | `/auth/login`               | ✗    | —     | Login email/password      |
+| GET    | `/auth/verify-email`        | ✗    | —     | Verifikasi email          |
+| GET    | `/auth/resend-verification` | ✓    | —     | Kirim ulang verifikasi    |
+| GET    | `/auth/google`              | ✗    | —     | Redirect ke Google OAuth  |
+| GET    | `/auth/google/callback`     | ✗    | —     | Callback dari Google      |
+| GET    | `/auth/me`                  | ✓    | —     | Lihat profile user        |
+| GET    | `/auth/logout`              | ✓    | —     | Logout (invalidasi token) |
+| GET    | `/auth/users`               | ✓    | ADMIN | List semua user           |
+| PATCH  | `/auth/users/:userId/role`  | ✓    | ADMIN | Ubah role user            |
 
-### Posts (`/posts`) — semua butuh autentikasi
+### Posts — semua butuh autentikasi
 
 | Method | Endpoint     | Deskripsi                   |
 | ------ | ------------ | --------------------------- |
@@ -108,6 +111,8 @@ npm run db:studio    # Buka Prisma Studio
 | PUT    | `/posts/:id` | Update post (hanya pemilik) |
 | DELETE | `/posts/:id` | Hapus post (hanya pemilik)  |
 
+---
+
 ## Alur Autentikasi
 
 1. **Login** — user login via email/password atau Google OAuth
@@ -116,30 +121,7 @@ npm run db:studio    # Buka Prisma Studio
 4. **Authorization Header** — setiap request protected pakai `Bearer <token>`
 5. **Logout** — backend increment `tokenVersion`, token lama jadi tidak valid
 
-## Testing
-
-```bash
-cd apps/backend
-npm run test          # Vitest run
-```
-
-Test menggunakan **Vitest** + **Supertest** — semua dependensi eksternal (database, email, Google OAuth) di-mock, jadi tidak perlu koneksi ke service sungguhan.
-
-### Test coverage
-
-| Endpoint                        | Sukses | Error         |
-| ------------------------------- | ------ | ------------- |
-| `GET /`                         | ✅     | -             |
-| `POST /auth/register`           | ✅     | 400, 400, 500 |
-| `POST /auth/login`              | ✅     | 400, 500      |
-| `GET /auth/me`                  | ✅     | 401, 401, 401 |
-| `GET /auth/logout`              | ✅     | -             |
-| `GET /auth/resend-verification` | ✅     | -             |
-| `POST /posts`                   | ✅     | 400           |
-| `GET /posts`                    | ✅     | -             |
-| `GET /posts/:id`                | ✅     | 404           |
-| `PUT /posts/:id`                | ✅     | 403           |
-| `DELETE /posts/:id`             | ✅     | 404           |
+---
 
 ## Teknologi
 

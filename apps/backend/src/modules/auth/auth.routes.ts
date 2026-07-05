@@ -2,12 +2,14 @@ import passport from "@/config/passport";
 import { authenticateJwt } from "@/middleware/authenticate-jwt";
 import { Router } from "express";
 import {
+  getAllUsersController,
   getMe,
   googleCallback,
   loginWithEmailController,
   logout,
   registerController,
   resendVerificationController,
+  updateUserRoleController,
   verifyEmailController,
 } from "./auth.controller";
 
@@ -37,6 +39,8 @@ router.get(
 
 // protected
 router.get("/me", authenticateJwt, getMe);
+router.get("/users", authenticateJwt, getAllUsersController)
+router.patch("/users/:userId/role", authenticateJwt, updateUserRoleController)
 router.get("/logout", authenticateJwt, logout);
 
 export default router;

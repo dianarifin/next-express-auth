@@ -1,3 +1,4 @@
+import { Role } from "@repo/database/generated/prisma/enums";
 import { prisma } from "@repo/database/lib/prisma";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
@@ -160,4 +161,49 @@ export async function resendVerificationEmail(userId: string) {
 
   const token = await generateVerificationToken(userId);
   return { user, token };
+}
+
+
+// ambil semua users (hanya untuk admin)
+export async function getAllUsers() {
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      avatarUrl: true,
+      role: true,
+      provider: true,
+      emailVerified: true,
+      createdAt: true,
+    }
+  })
+
+  return users;
+}
+
+// update role user (hanya admin yang bisa akses)
+export async function updateUserRole(userId: string, newRole: Role) {
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+
+  if (!user) {
+    throw Object.assign(new Error("User not found"), { status: 404 });
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { role: newRole },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      avatarUrl: true,
+      role: true,
+      provider: true,
+      emailVerified: true,
+    },
+  });
+
+  return updatedUser;
 }

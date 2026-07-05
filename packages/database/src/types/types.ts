@@ -17,6 +17,19 @@ export type UserPublic = Prisma.UserGetPayload<{
 
 export type JwtPayload = UserPublic & { tokenVersion: number };
 
+export type UserWithCreatedAt = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    email: true;
+    name: true;
+    avatarUrl: true;
+    role: true;
+    provider: true;
+    emailVerified: true;
+    createdAt: true;
+  }
+}>
+
 // post
 // post tanpa author
 export type PostPublic = Prisma.PostGetPayload<{

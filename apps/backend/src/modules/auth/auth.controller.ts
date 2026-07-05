@@ -1,14 +1,17 @@
 import passport from "@/config/passport";
 import { sendVerificationEmail } from "@/utils/email";
 import { generateJwt } from "@/utils/jwt";
+import { Role } from "@repo/database/generated/prisma/enums";
 import { prisma } from "@repo/database/lib/prisma";
 import { JwtPayload } from "@repo/database/types/types";
 import { NextFunction, Request, Response } from "express";
 import {
   generateVerificationToken,
+  getAllUsers,
   loginWithEmail,
   registerUser,
   resendVerificationEmail,
+  updateUserRole,
   verifyEmailWithToken,
 } from "./auth.service";
 
@@ -282,4 +285,61 @@ export async function logout(req: Request, res: Response) {
 
   res.clearCookie("token"); // hapus cookie token di browser
   res.json({ message: "Logout berhasil, hapus token di client" });
+}
+
+
+// get all users (admin only)
+export async function getAllUsersController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    // cek role dari token
+    if (req.user?.role !== Role.ADMIN) {
+      res.status(403).json({ error: "Only admins can view all users" })
+      return;
+    }
+
+    const users = await getAllUsers();
+    res.json({ users });
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+// update role user (hanya admin)
+export async function updateUserRoleController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+
+  try {
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    // validasi user login harus admin
+    if (req.user?.role !== Role.ADMIN) {
+      res.status(403).json({ error: "Role must be either USER or ADMIN" })
+      return;
+    }
+
+    // validasi role yang dikirim
+    if (!role || (role !== Role.USER && role !== Role.ADMIN)) {
+      res.status(400).json({ error: "Role must be either USER or ADMIN" })
+      return;
+    }
+
+    const updatedUser = await updateUserRole(userId as string, role as Role)
+
+    res.json({
+      message: "User role updated successfully",
+      user: updatedUser,
+    })
+  } catch (error) {
+    next(error)
+  }
 }

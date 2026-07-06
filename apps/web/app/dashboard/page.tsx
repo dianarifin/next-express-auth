@@ -7,6 +7,7 @@ import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { UserProfileCard } from "@/components/dashboard/user-profile-card";
 import { Spinner } from "@/components/dashboard/spinner";
+import { RouteNav } from "@/components/dashboard/route-nav";
 
 function DashboardContent() {
   const router = useRouter();
@@ -84,6 +85,8 @@ function DashboardContent() {
             Profil Akun
           </p>
           <UserProfileCard user={user} />
+          {/* Route navigation */}
+          <RouteNav userRole={user.role} />
         </div>
 
         {/* Session status */}

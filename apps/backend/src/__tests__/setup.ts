@@ -31,10 +31,17 @@ vi.mock("@repo/database/lib/prisma", () => ({
   },
 }));
 
+// File lokal dengan named export (bukan default):
+// Tidak perlu `default` karena importnya pakai kurung kurawal.
 vi.mock("@/utils/email", () => ({
   sendVerificationEmail: vi.fn(),
 }));
 
+// Di ESM, `export default` → `import X` berarti X = `default`.
+// Dengan memberikan **kedua level**, mock ini kebal terhadap perubahan cara Vitest menangani CJS interop.
+// Mungkin `bcrypt` = `{ hash, compare }` ✅, mungkin `bcrypt` = `{ default: { hash, compare } }` ❌ lalu `bcrypt.hash is not a function
+// Mungkin `bcrypt` = `{ hash, compare }` ✅, mungkin `bcrypt` = `undefined` ❌ (karena CJS interop cari `default`)
+// Aman di kedua arah** ✅✅ dengan memakai pendekatan dibawah ini:
 vi.mock("bcryptjs", () => ({
   default: {
     hash: vi.fn(() => Promise.resolve("$2a$10$mocked-hash")),

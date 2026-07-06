@@ -29,10 +29,12 @@ describe("POST /auth/register", () => {
       verificationToken: "mock-token",
     });
 
+    // ini test dilakukan pada route asli, menggunakan semua middleware aslinya
     const res = await request(app)
       .post("/auth/register")
       .send({ name: "Test user", email: "test@example.com", password: "password123" });
 
+    // setelah dikirim (post), maka return diharapkan akan seperti dibawah ini
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty("token");
     expect(res.body.user).toMatchObject(mockUserPublic);

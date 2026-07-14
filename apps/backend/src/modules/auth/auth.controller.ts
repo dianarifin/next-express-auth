@@ -29,6 +29,7 @@ export async function registerController(
     // validasi sederhana
     if (!name || !email || !password) {
       res.status(400).json({ error: "Nama, email, and password are required" });
+      return;
     }
 
     if (password.length < 6) {

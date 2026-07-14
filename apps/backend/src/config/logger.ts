@@ -1,8 +1,8 @@
+import { Handler } from "express";
+import morgan from "morgan";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import morgan from "morgan";
-import { Handler } from "express";
 
 /**
  * Morgan logger middleware — menulis log request/response.
@@ -10,12 +10,16 @@ import { Handler } from "express";
  * - Production:   output "combined" (lengkap) ke file + console
  */
 
-export function morganLogger(): Handler {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const logsDir = path.join(__dirname, "../../logs");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+export const logsDir = path.join(__dirname, "../../logs");
 
+export function ensureLogsDir() {
   fs.mkdirSync(logsDir, { recursive: true });
+}
+
+export function morganLogger(): Handler {
+  ensureLogsDir();
 
   const accessLogStream = fs.createWriteStream(
     path.join(logsDir, "access.log"),

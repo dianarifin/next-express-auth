@@ -1,5 +1,6 @@
 import passport from "@/config/passport";
 import { authenticateJwt } from "@/middleware/authenticate-jwt";
+import { authLimiter, strictLimiter } from "@/middleware/rate-limiter";
 import { Router } from "express";
 import {
   getAllUsersController,
@@ -26,14 +27,15 @@ router.get(
 router.get("/google/callback", googleCallback);
 
 // email and password
-router.post("/login", loginWithEmailController);
-router.post("/register", registerController);
+router.post("/login", authLimiter, loginWithEmailController);
+router.post("/register", authLimiter, registerController);
 
 // email verification
 router.get("/verify-email", verifyEmailController);
 router.get(
   "/resend-verification",
   authenticateJwt,
+  strictLimiter, // lebih ketat -> 3x per 10 menit
   resendVerificationController,
 );
 

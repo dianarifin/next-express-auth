@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -29,6 +29,7 @@ const GOOGLE_AUTH_URL = `${BACKEND_URL}/auth/google`;
 
 export function LoginCard() {
   const [isPending, startTransition] = useTransition();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const formSchema = z.object({
@@ -61,6 +62,11 @@ export function LoginCard() {
         const result = await res.json();
 
         if (!res.ok) {
+          if (res.status === 429) {
+            // rate limit error - tampilkan sebagai global banner
+            setErrorMessage(result.error || "Terlalu banyak percobaan. Silakan coba lagi nanti!")
+          }
+
           form.setError("email", { message: result.error || "Login failed" });
           return;
         }
@@ -84,6 +90,14 @@ export function LoginCard() {
       <CardContent className="space-y-6">
         <form id="login-form" onSubmit={form.handleSubmit(handleLogin)}>
           <FieldGroup>
+            {errorMessage && (
+              <div
+                role="alert"
+                className="rounded-none border border-red-500/50 bg-red-950/50 px-4 text-sm text-red-400"
+              >
+                {errorMessage}
+              </div>
+            )}
             <Controller
               name="email"
               control={form.control}
@@ -95,13 +109,17 @@ export function LoginCard() {
                   <FieldLabel htmlFor="email">Email</FieldLabel>
                   <FieldContent>
                     <Input
+                      {...field}
                       id="email"
                       type="email"
                       placeholder="Enter your email"
                       autoComplete="email"
                       aria-invalid={fieldState.invalid}
-
-                      {...field}
+                      onChange={(e) => {
+                        setErrorMessage(null);
+                        field.onChange(e);
+                      }}
+                      onFocus={() => setErrorMessage(null)}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -118,12 +136,17 @@ export function LoginCard() {
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <FieldContent>
                     <Input
+                      {...field}
                       id="password"
                       type="password"
                       placeholder="Enter your password"
                       autoComplete="current-password"
                       aria-invalid={fieldState.invalid}
-                      {...field}
+                      onChange={(e) => {
+                        setErrorMessage(null);
+                        field.onChange(e);
+                      }}
+                      onFocus={() => setErrorMessage(null)}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />

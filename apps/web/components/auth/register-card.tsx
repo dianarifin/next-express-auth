@@ -45,6 +45,7 @@ type formSchemaType = z.infer<typeof formSchema>;
 export function RegisterCard() {
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm<formSchemaType>({
@@ -76,6 +77,11 @@ export function RegisterCard() {
         const result = await res.json();
 
         if (!res.ok) {
+          if (res.status === 429) {
+            // rate limit error - tampilkan sebagai global banner
+            setErrorMessage(result.error || "Terlalu banyak percobaan. Silakan coba lagi nanti!")
+          }
+
           setServerError(result.error || "Registration failed");
           return;
         }
@@ -98,6 +104,14 @@ export function RegisterCard() {
       <CardContent>
         <form id="register-form" onSubmit={form.handleSubmit(handleRegister)}>
           <FieldGroup>
+            {errorMessage && (
+              <div
+                role="alert"
+                className="rounded-none border border-red-500/50 bg-red-950/50 px-4 text-sm text-red-400"
+              >
+                {errorMessage}
+              </div>
+            )}
             {/* ── Name ── */}
             <Controller
               name="name"
@@ -107,11 +121,16 @@ export function RegisterCard() {
                   <FieldLabel htmlFor="name">Name</FieldLabel>
                   <FieldContent>
                     <Input
+                      {...field}
                       id="name"
                       placeholder="Your name"
                       autoComplete="name"
                       aria-invalid={fieldState.invalid}
-                      {...field}
+                      onChange={(e) => {
+                        setErrorMessage(null);
+                        field.onChange(e);
+                      }}
+                      onFocus={() => setErrorMessage(null)}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -130,12 +149,17 @@ export function RegisterCard() {
                   <FieldLabel htmlFor="reg-email">Email</FieldLabel>
                   <FieldContent>
                     <Input
+                      {...field}
                       id="reg-email"
                       type="email"
                       placeholder="you@example.com"
                       autoComplete="email"
                       aria-invalid={fieldState.invalid}
-                      {...field}
+                      onChange={(e) => {
+                        setErrorMessage(null);
+                        field.onChange(e);
+                      }}
+                      onFocus={() => setErrorMessage(null)}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -154,12 +178,17 @@ export function RegisterCard() {
                   <FieldLabel htmlFor="reg-password">Password</FieldLabel>
                   <FieldContent>
                     <Input
+                      {...field}
                       id="reg-password"
                       type="password"
                       placeholder="Min. 6 characters"
                       autoComplete="new-password"
                       aria-invalid={fieldState.invalid}
-                      {...field}
+                      onChange={(e) => {
+                        setErrorMessage(null);
+                        field.onChange(e);
+                      }}
+                      onFocus={() => setErrorMessage(null)}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -180,12 +209,17 @@ export function RegisterCard() {
                   </FieldLabel>
                   <FieldContent>
                     <Input
+                      {...field}
                       id="confirm-password"
                       type="password"
                       placeholder="Repeat your password"
                       autoComplete="new-password"
                       aria-invalid={fieldState.invalid}
-                      {...field}
+                      onChange={(e) => {
+                        setErrorMessage(null);
+                        field.onChange(e);
+                      }}
+                      onFocus={() => setErrorMessage(null)}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
